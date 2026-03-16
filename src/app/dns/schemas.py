@@ -1,19 +1,23 @@
+from typing import Optional
+
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class DNSCreate(BaseModel):
     project_id: int = Field(..., description="프로젝트 ID")
-    subdomain: str = Field(
-        ...,
+    subdomain: Optional[str] = Field(
+        None,
         min_length=1,
         max_length=63,
-        description="서브도메인 (영문 소문자, 숫자, 하이픈만 허용)",
+        description="서브도메인 (영문 소문자, 숫자, 하이픈만 허용). 미입력 시 자동 생성",
         examples=["my-app"],
     )
 
     @field_validator("subdomain")
     @classmethod
-    def validate_subdomain(cls, v: str) -> str:
+    def validate_subdomain(cls, v: Optional[str]) -> Optional[str]:
+        if v is None:
+            return v
         import re
         v = v.strip().lower()
         if not re.match(r"^[a-z0-9]([a-z0-9\-]*[a-z0-9])?$", v):
