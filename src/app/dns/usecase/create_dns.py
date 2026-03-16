@@ -4,6 +4,7 @@ from src.app.base_usecase import BaseUseCase
 from src.app.dns.exceptions import DNSAlreadyExists, OnlyOwnerCanManageDNS, ResourceServerError
 from src.app.dns.schemas import DNSCreate
 from src.common.enums import UserRole
+from src.common.id_generator import IdGenerator
 from src.core.client.dns_resource import DNSResourceClient
 from src.core.domain.dns import DNS
 from src.core.uow import UnitOfWork
@@ -34,13 +35,12 @@ class CreateDNSUseCase(BaseUseCase):
             raise OnlyOwnerCanManageDNS()
 
         async with self.uow:
-            if await self.uow.dns.exists_by_subdomain(request.subdomain):
-                raise DNSAlreadyExists()
-
+            subdomain = await self._resolve_subdomain(request.subdomain)
             dns = DNS(
                 project_id=request.project_id,
                 deployment_id=deployment_id,
-                subdomain=request.subdomain,
+                subdomain=subdomain,
+                deployment_type=request.deployment_type,
             )
             dns = await self.uow.dns.insert(dns)
 
@@ -51,3 +51,15 @@ class CreateDNSUseCase(BaseUseCase):
 
             await self.uow.commit()
             return dns
+
+    async def _resolve_subdomain(self, requested: str | None) -> str:
+        if requested:
+            if await self.uow.dns.exists_by_subdomain(requested):
+                raise DNSAlreadyExists()
+            return requested
+
+        for _ in range(5):
+            subdomain = str(IdGenerator.generate_sonyflake_id())
+            if not await self.uow.dns.exists_by_subdomain(subdomain):
+                return subdomain
+        raise DNSAlreadyExists()

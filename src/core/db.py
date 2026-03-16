@@ -9,7 +9,7 @@ db_config = get_db_config()
 
 
 class BaseEntity(DeclarativeBase):
-    raise NotImplementedError
+    pass
 
 
 engine = create_async_engine(db_config.url, echo=False, pool_pre_ping=True)
