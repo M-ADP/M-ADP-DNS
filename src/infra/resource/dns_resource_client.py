@@ -29,9 +29,9 @@ class DNSResourceClientImpl(DNSResourceClient):
                 session.post(
                     "/apps/dns",
                     json={
-                        "id": dns.id,
-                        "project_id": dns.project_id,
-                        "deployment_id": dns.deployment_id,
+                        "id": str(dns.id),
+                        "project_id": str(dns.project_id),
+                        "deployment_id": str(dns.deployment_id),
                         "subdomain": dns.subdomain,
                     },
                 )
@@ -47,8 +47,8 @@ class DNSResourceClientImpl(DNSResourceClient):
                 session.put(
                     f"/apps/dns/{dns.id}",
                     json={
-                        "project_id": dns.project_id,
-                        "deployment_id": dns.deployment_id,
+                        "project_id": str(dns.project_id),
+                        "deployment_id": str(dns.deployment_id),
                         "subdomain": dns.subdomain,
                     },
                 )
