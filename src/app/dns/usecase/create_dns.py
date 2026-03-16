@@ -34,21 +34,8 @@ class CreateDNSUseCase(BaseUseCase):
         if role != UserRole.OWNER:
             raise OnlyOwnerCanManageDNS()
 
-        is_auto_generated = request.subdomain is None
-
         async with self.uow:
-            if is_auto_generated:
-                for _ in range(5):
-                    subdomain = str(IdGenerator.generate_sonyflake_id())
-                    if not await self.uow.dns.exists_by_subdomain(subdomain):
-                        break
-                else:
-                    raise DNSAlreadyExists()
-            else:
-                subdomain = request.subdomain
-                if await self.uow.dns.exists_by_subdomain(subdomain):
-                    raise DNSAlreadyExists()
-
+            subdomain = await self._resolve_subdomain(request.subdomain)
             dns = DNS(
                 project_id=request.project_id,
                 deployment_id=deployment_id,
@@ -64,3 +51,15 @@ class CreateDNSUseCase(BaseUseCase):
 
             await self.uow.commit()
             return dns
+
+    async def _resolve_subdomain(self, requested: str | None) -> str:
+        if requested:
+            if await self.uow.dns.exists_by_subdomain(requested):
+                raise DNSAlreadyExists()
+            return requested
+
+        for _ in range(5):
+            subdomain = str(IdGenerator.generate_sonyflake_id())
+            if not await self.uow.dns.exists_by_subdomain(subdomain):
+                return subdomain
+        raise DNSAlreadyExists()
