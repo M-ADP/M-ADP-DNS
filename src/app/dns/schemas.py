@@ -1,10 +1,13 @@
-from typing import Optional
+from typing import Literal, Optional
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
+
+DeploymentType = Literal["CloudDB", "App Deployment"]
 
 
 class DNSCreate(BaseModel):
     project_id: int = Field(..., description="프로젝트 ID")
+    deployment_type: DeploymentType = Field(..., description="배포 타입")
     subdomain: Optional[str] = Field(
         None,
         min_length=1,
@@ -51,3 +54,4 @@ class DNSResponse(BaseModel):
     project_id: int
     deployment_id: int
     subdomain: str
+    deployment_type: DeploymentType

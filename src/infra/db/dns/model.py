@@ -34,6 +34,10 @@ class DNS(BaseEntity):
         String(255),
         nullable=False,
     )
+    deployment_type: Mapped[str] = mapped_column(
+        String(50),
+        nullable=False,
+    )
 
     def to_entity(self) -> DNSEntity:
         return DNSEntity(
@@ -41,4 +45,5 @@ class DNS(BaseEntity):
             project_id=self.project_id,
             deployment_id=self.deployment_id,
             subdomain=self.subdomain,
+            deployment_type=self.deployment_type,
         )

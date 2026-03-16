@@ -1,6 +1,9 @@
 from dataclasses import dataclass, field
+from typing import Literal
 
 from src.common.id_generator import IdGenerator
+
+DeploymentType = Literal["CloudDB", "App Deployment"]
 
 
 @dataclass
@@ -9,6 +12,7 @@ class DNS:
     project_id: int = 0
     deployment_id: int = 0
     subdomain: str = ""
+    deployment_type: DeploymentType = "App Deployment"
 
     def update_subdomain(self, subdomain: str) -> None:
         self.subdomain = subdomain
