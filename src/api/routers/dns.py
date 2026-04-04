@@ -4,6 +4,7 @@ from src.app.dns.schemas import DNSCreate, DNSResponse, DNSUpdate
 from src.app.dns.usecase import (
     CreateDNSUseCase,
     DeleteDNSUseCase,
+    DeleteProjectDNSUseCase,
     ListDNSUseCase,
     UpdateDNSUseCase,
 )
@@ -80,6 +81,28 @@ async def delete_dns_endpoint(
     return SuccessResponse(
         message="DNS가 삭제되었습니다.",
         data=DNSResponse.model_validate(dns),
+    )
+
+
+@router.delete(
+    "/project/{project_id}",
+    response_model=SuccessResponse[None],
+    status_code=200,
+)
+async def delete_project_dns_endpoint(
+    project_id: int,
+    user: UserInfo = Depends(get_user_info),
+    usecase: DeleteProjectDNSUseCase = Depends(DeleteProjectDNSUseCase),
+) -> SuccessResponse[None]:
+    """프로젝트의 모든 DNS를 삭제합니다. (PROJECT OWNER 전용)"""
+    await usecase(
+        project_id=project_id,
+        user_id=user.user_id,
+        role=user.role,
+    )
+    return SuccessResponse(
+        message="프로젝트의 모든 DNS가 삭제되었습니다.",
+        data=None,
     )
 
 

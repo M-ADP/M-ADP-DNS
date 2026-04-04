@@ -1,6 +1,6 @@
 from typing import List
 
-from sqlalchemy import select
+from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.domain.dns import DNS
@@ -51,11 +51,21 @@ class DNSRepositoryImpl(DNSRepository):
         result = await self._session.execute(stmt)
         return [model.to_entity() for model in result.scalars().all()]
 
+    async def get_all_by_project(self, project_id: int) -> List[DNS]:
+        stmt = select(DNSModel).where(DNSModel.project_id == project_id)
+        result = await self._session.execute(stmt)
+        return [model.to_entity() for model in result.scalars().all()]
+
     async def delete(self, dns: DNS) -> None:
         model = await self._session.get(DNSModel, dns.id)
         if model is None:
             return
         await self._session.delete(model)
+        await self._session.flush()
+
+    async def delete_by_project(self, project_id: int) -> None:
+        stmt = delete(DNSModel).where(DNSModel.project_id == project_id)
+        await self._session.execute(stmt)
         await self._session.flush()
 
     async def update_subdomain(self, dns_id: int, subdomain: str) -> DNS:

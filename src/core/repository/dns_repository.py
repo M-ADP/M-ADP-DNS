@@ -29,8 +29,18 @@ class DNSRepository(Repository[DNS]):
         raise NotImplementedError
 
     @abstractmethod
+    async def get_all_by_project(self, project_id: int) -> List[DNS]:
+        """프로젝트의 모든 DNS 목록을 조회합니다."""
+        raise NotImplementedError
+
+    @abstractmethod
     async def delete(self, dns: DNS) -> None:
         """DNS를 삭제합니다."""
+        raise NotImplementedError
+
+    @abstractmethod
+    async def delete_by_project(self, project_id: int) -> None:
+        """프로젝트의 모든 DNS를 삭제합니다."""
         raise NotImplementedError
 
     @abstractmethod
