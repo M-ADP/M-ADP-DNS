@@ -21,6 +21,7 @@ class DNSRepositoryImpl(DNSRepository):
             deployment_id=dns.deployment_id,
             subdomain=dns.subdomain,
             deployment_type=dns.deployment_type,
+            service_type=dns.service_type,
         )
         self._session.add(model)
         await self._session.flush()

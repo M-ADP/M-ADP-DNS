@@ -41,6 +41,7 @@ class CreateDNSUseCase(BaseUseCase):
                 deployment_id=deployment_id,
                 subdomain=subdomain,
                 deployment_type=request.deployment_type,
+                service_type=request.service_type,
             )
             dns = await self.uow.dns.insert(dns)
 

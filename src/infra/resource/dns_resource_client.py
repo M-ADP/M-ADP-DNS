@@ -27,29 +27,31 @@ class DNSResourceClientImpl(DNSResourceClient):
         async with aiohttp.ClientSession(base_url=self._base_url) as session:
             await self._request(
                 session.post(
-                    "/apps/dns",
+                    "/v1/dns",
                     json={
                         "id": str(dns.id),
                         "project_id": str(dns.project_id),
                         "deployment_id": str(dns.deployment_id),
                         "subdomain": dns.subdomain,
+                        "service_type": dns.service_type,
                     },
                 )
             )
 
     async def delete(self, dns: DNS) -> None:
         async with aiohttp.ClientSession(base_url=self._base_url) as session:
-            await self._request(session.delete(f"/apps/dns/{dns.id}"))
+            await self._request(session.delete(f"/v1/dns/{dns.id}"))
 
     async def update(self, dns: DNS) -> None:
         async with aiohttp.ClientSession(base_url=self._base_url) as session:
             await self._request(
                 session.put(
-                    f"/apps/dns/{dns.id}",
+                    f"/v1/dns/{dns.id}",
                     json={
                         "project_id": str(dns.project_id),
                         "deployment_id": str(dns.deployment_id),
                         "subdomain": dns.subdomain,
+                        "service_type": dns.service_type,
                     },
                 )
             )
