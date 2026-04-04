@@ -1,8 +1,7 @@
 from fastapi import Depends
 
 from src.app.base_usecase import BaseUseCase
-from src.app.dns.exceptions import DNSNotFound, OnlyOwnerCanManageDNS, ResourceServerError
-from src.common.enums import UserRole
+from src.app.dns.exceptions import DNSNotFound, ResourceServerError
 from src.core.client.dns_resource import DNSResourceClient
 from src.core.domain.dns import DNS
 from src.core.uow import UnitOfWork
@@ -26,11 +25,7 @@ class DeleteDNSUseCase(BaseUseCase):
         self,
         dns_id: int,
         user_id: int,
-        role: UserRole,
     ) -> DNS:
-        if role != UserRole.OWNER:
-            raise OnlyOwnerCanManageDNS()
-
         async with self.uow:
             dns = await self.uow.dns.get_by_id(dns_id)
             if dns is None:

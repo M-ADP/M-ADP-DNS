@@ -1,9 +1,8 @@
 from fastapi import Depends
 
 from src.app.base_usecase import BaseUseCase
-from src.app.dns.exceptions import DNSAlreadyExists, OnlyOwnerCanManageDNS, ResourceServerError
+from src.app.dns.exceptions import DNSAlreadyExists, ResourceServerError
 from src.app.dns.schemas import DNSCreate
-from src.common.enums import UserRole
 from src.common.id_generator import IdGenerator
 from src.core.client.dns_resource import DNSResourceClient
 from src.core.domain.dns import DNS
@@ -29,11 +28,7 @@ class CreateDNSUseCase(BaseUseCase):
         deployment_id: int,
         request: DNSCreate,
         user_id: int,
-        role: UserRole,
     ) -> DNS:
-        if role != UserRole.OWNER:
-            raise OnlyOwnerCanManageDNS()
-
         async with self.uow:
             subdomain = await self._resolve_subdomain(request.subdomain)
             dns = DNS(

@@ -25,12 +25,11 @@ async def create_dns_endpoint(
     user: UserInfo = Depends(get_user_info),
     usecase: CreateDNSUseCase = Depends(CreateDNSUseCase),
 ) -> SuccessResponse[DNSResponse]:
-    """DNS를 생성합니다. (PROJECT OWNER 전용)"""
+    """DNS를 생성합니다."""
     dns = await usecase(
         deployment_id=deployment_id,
         request=payload,
         user_id=user.user_id,
-        role=user.role,
     )
     return SuccessResponse(
         message="DNS가 생성되었습니다.",
@@ -49,12 +48,11 @@ async def update_dns_endpoint(
     user: UserInfo = Depends(get_user_info),
     usecase: UpdateDNSUseCase = Depends(UpdateDNSUseCase),
 ) -> SuccessResponse[DNSResponse]:
-    """DNS 서브도메인을 수정합니다. (PROJECT OWNER 전용)"""
+    """DNS 서브도메인을 수정합니다."""
     dns = await usecase(
         dns_id=dns_id,
         request=payload,
         user_id=user.user_id,
-        role=user.role,
     )
     return SuccessResponse(
         message="DNS가 수정되었습니다.",
@@ -72,11 +70,10 @@ async def delete_dns_endpoint(
     user: UserInfo = Depends(get_user_info),
     usecase: DeleteDNSUseCase = Depends(DeleteDNSUseCase),
 ) -> SuccessResponse[DNSResponse]:
-    """DNS를 삭제합니다. (PROJECT OWNER 전용)"""
+    """DNS를 삭제합니다."""
     dns = await usecase(
         dns_id=dns_id,
         user_id=user.user_id,
-        role=user.role,
     )
     return SuccessResponse(
         message="DNS가 삭제되었습니다.",
@@ -94,11 +91,10 @@ async def delete_project_dns_endpoint(
     user: UserInfo = Depends(get_user_info),
     usecase: DeleteProjectDNSUseCase = Depends(DeleteProjectDNSUseCase),
 ) -> SuccessResponse[None]:
-    """프로젝트의 모든 DNS를 삭제합니다. (PROJECT OWNER 전용)"""
+    """프로젝트의 모든 DNS를 삭제합니다."""
     await usecase(
         project_id=project_id,
         user_id=user.user_id,
-        role=user.role,
     )
     return SuccessResponse(
         message="프로젝트의 모든 DNS가 삭제되었습니다.",

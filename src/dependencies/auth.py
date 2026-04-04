@@ -13,7 +13,7 @@ class UserInfo:
 
 async def get_user_info(
     x_user_id: int = Header(..., alias="X-User-Id", description="사용자 ID"),
-    x_user_role: UserRole = Header(..., alias="X-User-Role", description="사용자 역할 (OWNER | MEMBER)"),
+    x_user_role: UserRole = Header(..., alias="X-User-Role", description="사용자 역할 (ADMIN | USER)"),
 ) -> UserInfo:
     if not x_user_id:
         raise HTTPException(

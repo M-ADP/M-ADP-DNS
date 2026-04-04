@@ -1,8 +1,7 @@
 from fastapi import Depends
 
 from src.app.base_usecase import BaseUseCase
-from src.app.dns.exceptions import OnlyOwnerCanManageDNS, ResourceServerError
-from src.common.enums import UserRole
+from src.app.dns.exceptions import ResourceServerError
 from src.core.client.dns_resource import DNSResourceClient
 from src.core.uow import UnitOfWork
 from src.dependencies.resource_client import get_resource_client
@@ -25,11 +24,7 @@ class DeleteProjectDNSUseCase(BaseUseCase):
         self,
         project_id: int,
         user_id: int,
-        role: UserRole,
     ) -> None:
-        if role != UserRole.OWNER:
-            raise OnlyOwnerCanManageDNS()
-
         async with self.uow:
             # 1. 프로젝트의 모든 DNS 조회
             dns_list = await self.uow.dns.get_all_by_project(project_id)
