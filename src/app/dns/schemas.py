@@ -3,7 +3,7 @@ from typing import Literal, Optional
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 DeploymentType = Literal["CloudDB", "App Deployment"]
-ServiceType = Literal["http", "ssh"]
+ServiceType = Literal["http"]
 
 
 class DNSCreate(BaseModel):
@@ -11,8 +11,8 @@ class DNSCreate(BaseModel):
     deployment_type: DeploymentType = Field(..., description="배포 타입")
     service_type: ServiceType = Field(
         "http",
-        description="서비스 타입 (http | ssh)",
-        examples=["http", "ssh"],
+        description="서비스 타입 (http)",
+        examples=["http"],
     )
     subdomain: Optional[str] = Field(
         None,

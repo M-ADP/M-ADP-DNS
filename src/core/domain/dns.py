@@ -4,7 +4,7 @@ from typing import Literal
 from src.common.id_generator import IdGenerator
 
 DeploymentType = Literal["CloudDB", "App Deployment"]
-ServiceType = Literal["http", "ssh"]
+ServiceType = Literal["http"]
 
 
 @dataclass
