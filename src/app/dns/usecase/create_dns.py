@@ -3,7 +3,7 @@ from fastapi import Depends
 from src.app.base_usecase import BaseUseCase
 from src.app.dns.exceptions import DNSAlreadyExists, ResourceServerError
 from src.app.dns.schemas import DNSCreate
-from src.common.id_generator import IdGenerator
+from src.common.subdomain_generator import SubdomainGenerator
 from src.core.client.dns_resource import DNSResourceClient
 from src.core.domain.dns import DNS
 from src.core.uow import UnitOfWork
@@ -55,7 +55,7 @@ class CreateDNSUseCase(BaseUseCase):
             return requested
 
         for _ in range(5):
-            subdomain = str(IdGenerator.generate_sonyflake_id())
+            subdomain = SubdomainGenerator.generate()
             if not await self.uow.dns.exists_by_subdomain(subdomain):
                 return subdomain
         raise DNSAlreadyExists()
