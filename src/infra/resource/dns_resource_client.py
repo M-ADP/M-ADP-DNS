@@ -4,7 +4,7 @@ import aiohttp
 
 from src.core.client.dns_resource import DNSResourceClient
 from src.core.domain.dns import DNS
-from src.infra.resource.exceptions import ResourceServerException
+from src.infra.resource.exceptions import ResourceNotFoundException, ResourceServerException
 
 
 class DNSResourceClientImpl(DNSResourceClient):
@@ -18,6 +18,8 @@ class DNSResourceClientImpl(DNSResourceClient):
             response = await coro
         except Exception as e:
             raise ResourceServerException() from e
+        if response.status == 404:
+            raise ResourceNotFoundException()
         if not response.ok:
             raise ResourceServerException(
                 f"리소스 서버 응답 오류: {response.status}"

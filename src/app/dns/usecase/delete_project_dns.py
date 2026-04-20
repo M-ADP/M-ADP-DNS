@@ -6,7 +6,7 @@ from src.core.client.dns_resource import DNSResourceClient
 from src.core.uow import UnitOfWork
 from src.dependencies.resource_client import get_resource_client
 from src.dependencies.uow import get_uow
-from src.infra.resource.exceptions import ResourceServerException
+from src.infra.resource.exceptions import ResourceNotFoundException, ResourceServerException
 
 
 class DeleteProjectDNSUseCase(BaseUseCase):
@@ -36,9 +36,9 @@ class DeleteProjectDNSUseCase(BaseUseCase):
             for dns in dns_list:
                 try:
                     await self.resource_client.delete(dns)
+                except ResourceNotFoundException:
+                    pass
                 except ResourceServerException as e:
-                    # 삭제 실패 시 로그만 남기고 진행할지, 중단할지 결정해야 합니다.
-                    # 여기서는 일단 한 번이라도 실패하면 에러를 던지도록 합니다.
                     raise ResourceServerError() from e
 
             # 3. 데이터베이스에서 일괄 삭제

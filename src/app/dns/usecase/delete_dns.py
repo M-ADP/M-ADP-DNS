@@ -7,7 +7,7 @@ from src.core.domain.dns import DNS
 from src.core.uow import UnitOfWork
 from src.dependencies.resource_client import get_resource_client
 from src.dependencies.uow import get_uow
-from src.infra.resource.exceptions import ResourceServerException
+from src.infra.resource.exceptions import ResourceNotFoundException, ResourceServerException
 
 
 class DeleteDNSUseCase(BaseUseCase):
@@ -35,6 +35,8 @@ class DeleteDNSUseCase(BaseUseCase):
 
             try:
                 await self.resource_client.delete(dns)
+            except ResourceNotFoundException:
+                pass
             except ResourceServerException as e:
                 raise ResourceServerError() from e
 
