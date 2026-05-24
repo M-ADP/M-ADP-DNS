@@ -1,3 +1,5 @@
+import logging
+
 from fastapi import Depends
 
 from src.app.base_usecase import BaseUseCase
@@ -8,6 +10,8 @@ from src.core.uow import UnitOfWork
 from src.dependencies.resource_client import get_resource_client
 from src.dependencies.uow import get_uow
 from src.infra.resource.exceptions import ResourceNotFoundException, ResourceServerException
+
+logger = logging.getLogger(__name__)
 
 
 class DeleteDNSUseCase(BaseUseCase):
@@ -36,8 +40,9 @@ class DeleteDNSUseCase(BaseUseCase):
             try:
                 await self.resource_client.delete(dns)
             except ResourceNotFoundException:
-                pass
+                logger.warning("리소스 서버에서 DNS를 찾을 수 없음 (무시): dns_id=%s", dns.id)
             except ResourceServerException as e:
+                logger.error("DNS 삭제 중 리소스 서버 오류: dns_id=%s", dns.id, exc_info=True)
                 raise ResourceServerError() from e
 
             await self.uow.commit()
