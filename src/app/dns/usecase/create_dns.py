@@ -1,3 +1,5 @@
+import logging
+
 from fastapi import Depends
 
 from src.app.base_usecase import BaseUseCase
@@ -10,6 +12,8 @@ from src.core.uow import UnitOfWork
 from src.dependencies.resource_client import get_resource_client
 from src.dependencies.uow import get_uow
 from src.infra.resource.exceptions import ResourceServerException
+
+logger = logging.getLogger(__name__)
 
 
 class CreateDNSUseCase(BaseUseCase):
@@ -43,6 +47,7 @@ class CreateDNSUseCase(BaseUseCase):
             try:
                 await self.resource_client.create(dns)
             except ResourceServerException as e:
+                logger.error("DNS 생성 중 리소스 서버 오류: dns_id=%s subdomain=%s", dns.id, dns.subdomain, exc_info=True)
                 raise ResourceServerError() from e
 
             await self.uow.commit()

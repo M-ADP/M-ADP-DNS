@@ -1,3 +1,4 @@
+import logging
 from typing import List
 
 import aiohttp
@@ -5,6 +6,8 @@ import aiohttp
 from src.core.client.dns_resource import DNSResourceClient
 from src.core.domain.dns import DNS
 from src.infra.resource.exceptions import ResourceNotFoundException, ResourceServerException
+
+logger = logging.getLogger(__name__)
 
 
 class DNSResourceClientImpl(DNSResourceClient):
@@ -17,10 +20,17 @@ class DNSResourceClientImpl(DNSResourceClient):
         try:
             response = await coro
         except Exception as e:
+            logger.error("리소스 서버 연결 실패: %s", e, exc_info=True)
             raise ResourceServerException() from e
         if response.status == 404:
             raise ResourceNotFoundException()
         if not response.ok:
+            body = await response.text()
+            logger.error(
+                "리소스 서버 오류 응답: status=%d body=%s",
+                response.status,
+                body,
+            )
             raise ResourceServerException(
                 f"리소스 서버 응답 오류: {response.status}"
             )
